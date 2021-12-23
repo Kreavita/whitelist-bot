@@ -1,15 +1,7 @@
 import os, json
 import discord
 
-import secrets
-
-guild_config = []
-
-def whitelist_bot():
-    global serverData
-    with open('guildConfigs.json') as file:
-        servers = json.load(file)
-
+import config
 
 client = discord.Client()
 
@@ -19,5 +11,4 @@ async def on_ready():
 
 
 if __name__ == "__main__":
-    client.run(secrets.BOT_TOKEN)
-    whitelist_bot()
+    client.run(config.BOT_TOKEN)
