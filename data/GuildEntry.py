@@ -12,13 +12,13 @@ class GuildEntry:
         - `rcon_address` RCON address for the RCON connection to the guild's minecraft server
         - `rcon_port` RCON port for the RCON connection to the guild's minecraft server
         - `rcon_password` RCON password for the RCON connection to the guild's minecraft server
-        - `players` Player storage dict, associates their discord ids to their ingame snames
+        - `players` Player storage dict, associates their discord ids (as strings) to their ingame snames
     """
     guild_id: int
     rcon_address: str
     rcon_port: int
     rcon_password: str
-    players: dict[int, str] = field(default_factory=dict)
+    players: dict[str, str] = field(default_factory=dict)
 
     def __init__(self, guild_id: int, rcon_address: str, rcon_port: int, rcon_password: str, players: dict[str, str] = {}):
         self.guild_id = guild_id
@@ -30,23 +30,23 @@ class GuildEntry:
     def player_by_id(self, user_id: int) -> Union[str, None]:
         """ Get the minecraft username associated with the Discord ID `user_id` and return it, or return `None`
         """
-        return self.players.get(user_id)
+        return self.players.get(str(user_id))
 
     def id_by_player(self, player_name: str) -> Union[int, None]:
         """ Get the Discord ID associated with a minecraft username `player_name` and return it, or return `None`
         """
-        for id, key in self.players:
-            if key == player_name.lower():
-                return id
+        for user_id in self.players.keys():
+            if self.players[user_id] == player_name.lower():
+                return int(user_id)
         return None
 
     def set_player(self, user_id: int, ingame_name: str) -> None:
         """Sets the username of a players
         """
         if ingame_name is None:
-            self.players[user_id] = None
+            self.players[str(user_id)] = None
         else:
-            self.players[user_id] = ingame_name.lower()
+            self.players[str(user_id)] = ingame_name.lower()
 
     def to_JSON(self) -> str:
         """Returns a JSON Representation of this GuildEntry
@@ -59,4 +59,4 @@ def GuildEntry_from_JSON(json_data: str) -> GuildEntry:
     """
 
     json_dict: dict = json.loads(json_data)
-    return GuildEntry(json_dict["guild_id"], json_dict["rcon_address"], json_dict["rcon_port"], json_dict["players"])
+    return GuildEntry(json_dict["guild_id"], json_dict["rcon_address"], json_dict["rcon_port"], json_dict["rcon_password"], json_dict["players"])

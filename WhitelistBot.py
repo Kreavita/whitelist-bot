@@ -51,12 +51,12 @@ class WhitelistBot(Client):
             await message.channel.send(f'{author.mention} The username `{params[0]}` has already been whitelisted by someone else! If you think this is an error, ask an Admin to manually whitelist you.')
             return
 
-        if guild.players.get(author.id) != None:
+        if guild.player_by_id(author.id) != None:
             if not whitelist(Command.REMOVE, author.guild.id, author.id):
                 await message.channel.send(f'{author.mention} An internal error occured while trying to whitelist your username, maybe a faulty RCON configuration?')
                 return
 
-            await message.channel.send(f'{author.mention} Your old minecraft account, `{guild.players.get(author.id)}`, is no longer whitelisted!')
+            await message.channel.send(f'{author.mention} Your old minecraft account, `{guild.player_by_id(author.id)}`, is no longer whitelisted!')
 
         guild.set_player(author.id, params[0])
 
@@ -162,6 +162,8 @@ class WhitelistBot(Client):
 
         if(not guild is None and guild.player_by_id(member.id) != None):
             whitelist(Command.REMOVE, member.guild.id, member.id)
+            guild.set_player(member.id, None)
+            dataInterface.save_guild(member.guild.id)
             print(f"'{member.name}' left the guild '{member.guild.name}' and their minecraft account, '{guild.player_by_id(member.id)}', has been removed from the whitelist.")
 
 
