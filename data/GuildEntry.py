@@ -9,9 +9,10 @@ class GuildEntry:
 
         Attributes:
         - `guild_id` ID of the discord guild
-        - `rcon_address` RCON address of the guilds minecraft server
-        - `rcon_port` RCON port of the guilds minecraft server
-        - `players` Player dict {user_id : ingame_name}
+        - `rcon_address` RCON address for the RCON connection to the guild's minecraft server
+        - `rcon_port` RCON port for the RCON connection to the guild's minecraft server
+        - `rcon_password` RCON password for the RCON connection to the guild's minecraft server
+        - `players` Player storage dict, associates their discord ids to their ingame snames
     """
     guild_id: int
     rcon_address: str

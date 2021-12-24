@@ -10,7 +10,7 @@ from data.GuildEntry import GuildEntry
 
 class WhitelistBot(Client):
     async def on_ready(self):
-        await self.change_presence(activity=Game("whitelist yourself with !whitelist - Bot by @Kreavita"))
+        await self.change_presence(activity=Game("whitelist yourself with /whitelist - Bot by @Kreavita"))
         print(f'{self.user} has connected to Discord!')
 
     async def on_message(self, message: Message):
@@ -37,41 +37,41 @@ class WhitelistBot(Client):
             await message.channel.send(f'{author.mention} Usage: `/whitelist <Minecraft-Username>`')
             return
 
-        guild: GuildEntry = dataInterface.guild_by_id(author.guild.id)
+        guild: GuildEntry = dataInterface.get_guild(author.guild.id)
+
+        if guild is None:
+            await message.channel.send(f'{author.mention} WhitelistBot has not been configured on this server. If you think this is an error, contact this servers admins.')
+            return
 
         if guild.player_by_id(author.id) == params[0].lower():
             await message.channel.send(f'{author.mention} You are already whitelisted, Nothing changed!')
             return
 
         if guild.id_by_player(params[0]) != None:
-            await message.channel.send(f'{author.mention} The username `{params[0]}` has already been whitelisted by someone else! \
-                If you think this is an error, ask an Admin to manually whitelist you.')
+            await message.channel.send(f'{author.mention} The username `{params[0]}` has already been whitelisted by someone else! If you think this is an error, ask an Admin to manually whitelist you.')
             return
 
         if guild.players.get(author.id) != None:
             if not whitelist(Command.REMOVE, author.guild.id, author.id):
-                await message.channel.send(f'{author.mention} An internal error occured while trying\
-                     to whitelist your username, maybe a faulty RCON configuration?')
+                await message.channel.send(f'{author.mention} An internal error occured while trying to whitelist your username, maybe a faulty RCON configuration?')
                 return
 
-            await message.channel.send(f'{author.mention} Your old minecraft account, `\
-                    {guild.players.get(author.id)}`, is no longer whitelisted!')
+            await message.channel.send(f'{author.mention} Your old minecraft account, `{guild.players.get(author.id)}`, is no longer whitelisted!')
 
         guild.set_player(author.id, params[0])
 
         if not whitelist(Command.ADD, author.guild.id, author.id):
-            await message.channel.send(f'{author.mention} An internal error occured while trying\
-                    to whitelist your username, maybe a faulty RCON configuration?')
+            await message.channel.send(f'{author.mention} An internal error occured while trying to whitelist your username, maybe a faulty RCON configuration?')
             return
 
         await message.channel.send(f'{author.mention} Your minecraft account `{params[0]}` has been added to the Whitelist!')
         print(
             f"'{author.name}' whitelisted his name '{params[0]}' on '{guild.name}'")
 
-    usage_string: str = 'Sorry, the command you entered was not correct.\n\
-                Bot Usage: \n\
-                `/enable <Server-ID> <RCON-Host:Port> <RCON-password>` to enable the bot for your server or update the config\n\
-                `/disable <Server-ID>` to remove the server from the whitelist. This will keep your whitelist, but delete the configuration on our servers.'
+    usage_string: str = 'Sorry, the command you entered was not correct.\n' +\
+        'Bot Usage: \n' + \
+        '`/ enable < Server-ID > <RCON-Host: Port > <RCON-password >` to enable the bot for your server or update the config\n' + \
+        '`/ disable < Server-ID >` to remove the server from the whitelist. This will keep your whitelist, but delete the configuration on our servers.'
 
     async def private_message(self, message: Message):
         """ Handles Private Discord Messages.
@@ -89,7 +89,7 @@ class WhitelistBot(Client):
         for guild in self.guilds:
             if guild.id == int(message_content[1]):
                 selectedGuild = guild.id
-                return
+                break
 
         if selectedGuild == 0:
             await message.channel.send(f"Error - Server not found! Make sure I am added to this Server.")
@@ -127,10 +127,10 @@ class WhitelistBot(Client):
 
             rcon_password: str = "".join(message_content[3:])
 
-            if dataInterface.guilds.get(selectedGuild.id):
-                guildConfig: GuildEntry = dataInterface.guilds.get(
-                    selectedGuild.id)
+            guildConfig: GuildEntry = dataInterface.get_guild(
+                selectedGuild.id)
 
+            if not guildConfig is None:
                 guildConfig.rcon_address = rcon_address
                 guildConfig.rcon_port = rcon_port
                 guildConfig.rcon_password = rcon_password
@@ -155,12 +155,11 @@ class WhitelistBot(Client):
     async def on_member_leave(self, member: Member):
         """ Handles Members Leaving
         """
-        guild: GuildEntry = dataInterface.guild_by_id(member.guild.id)
+        guild: GuildEntry = dataInterface.get_guild(member.guild.id)
 
-        if(guild.player_by_id(member.id) != None):
+        if(not guild is None and guild.player_by_id(member.id) != None):
             whitelist(Command.REMOVE, member.guild.id, member.id)
-            print(f"'{member.name}' left the guild '{member.guild.name}' \
-                    and their minecraft account, '{guild.player_by_id(member.id)}', has been removed from the whitelist.")
+            print(f"'{member.name}' left the guild '{member.guild.name}' and their minecraft account, '{guild.player_by_id(member.id)}', has been removed from the whitelist.")
 
 
 if __name__ == "__main__":

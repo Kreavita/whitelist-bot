@@ -69,9 +69,8 @@ def delete_guild(guild_id: int) -> bool:
     return False
 
 
-def guild_by_id(guild_id: int) -> GuildEntry:
-    """Returns the GuildEntry for a given `guild_id`. \
-        Creates a new GuildEntry if the `guild_id` is not in the Guilds dict. \
+def get_guild(guild_id: int) -> GuildEntry:
+    """Returns the GuildEntry for a given `guild_id`.
         Returns None if `guild_id` is None
 
         Arguments:
@@ -83,16 +82,12 @@ def guild_by_id(guild_id: int) -> GuildEntry:
     if guild_id == None:
         return None
 
-    if guilds.get(guild_id) == None:
-        # returns a new GuildEntry if the guild_id has none yet
-        guilds[guild_id] = GuildEntry(guild_id, "")
-
     return guilds.get(guild_id)
 
 
 def set_guild(guild_id: int, guild: GuildEntry) -> bool:
-    """Sets the GuildEntry for a given `guild_id`. \
-        Creates a new GuildEntry if the `guild_id` is not in the Guilds dict. \
+    """Sets the GuildEntry for a given `guild_id`.
+        Creates a new GuildEntry if the `guild_id` is not in the Guilds dict.
         Returns False if `guild_id` is None or `guild_id` is already set.
 
         Arguments:

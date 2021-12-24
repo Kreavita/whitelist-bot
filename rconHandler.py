@@ -57,7 +57,7 @@ def whitelist(command: Command, guild_id: int, user_id: int) -> bool:
             f"whitelist - Invalid paramaters: {command}, {guild_id}, {user_id}")
         return False
 
-    guild: GuildEntry = dataInterface.guild_by_id(guild_id)
+    guild: GuildEntry = dataInterface.get_guild(guild_id)
 
     if guild.player_by_id(user_id) == None:
         # Discord User has not registered their username
