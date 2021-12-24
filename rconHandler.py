@@ -35,6 +35,10 @@ def run_rcon_command(command: str, guild: GuildEntry) -> bool:
             f"THE FOLLOWING ERROR OCCURED WHILE TRYING TO CALL MRCON: \n \n {e.stderr}")
         return False
 
+    except TypeError as e:
+        print(f"ERROR: mrcon path is invalid!")
+        return False
+
 
 class Command(enum.Enum):
     ADD = 0

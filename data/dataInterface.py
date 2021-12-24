@@ -60,6 +60,8 @@ def delete_guild(guild_id: int) -> bool:
     if guilds.get(guild_id) == None:
         return False
 
+    guilds[guild_id] = None
+
     if os.path.exists(os.path.join(os.path.dirname(
             __file__), f"guilds\{guild_id}.json")):
         os.remove(os.path.join(os.path.dirname(

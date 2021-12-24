@@ -43,7 +43,10 @@ class GuildEntry:
     def set_player(self, user_id: int, ingame_name: str) -> None:
         """Sets the username of a players
         """
-        self.players[user_id] = ingame_name.lower()
+        if ingame_name is None:
+            self.players[user_id] = None
+        else:
+            self.players[user_id] = ingame_name.lower()
 
     def to_JSON(self) -> str:
         """Returns a JSON Representation of this GuildEntry

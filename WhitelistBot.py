@@ -22,7 +22,7 @@ class WhitelistBot(Client):
 
         if not type(message.author) is Member:
             # Handle private messages (RCON) in a different function
-            self.private_message(message)
+            await self.private_message(message)
             return
 
         if not message.content.startswith('/whitelist'):
@@ -61,10 +61,12 @@ class WhitelistBot(Client):
         guild.set_player(author.id, params[0])
 
         if not whitelist(Command.ADD, author.guild.id, author.id):
+            guild.set_player(author.id, None)
             await message.channel.send(f'{author.mention} An internal error occured while trying to whitelist your username, maybe a faulty RCON configuration?')
             return
 
         await message.channel.send(f'{author.mention} Your minecraft account `{params[0]}` has been added to the Whitelist!')
+        dataInterface.save_guild(author.guild.id)
         print(
             f"'{author.name}' whitelisted his name '{params[0]}' on '{guild.name}'")
 
@@ -78,26 +80,26 @@ class WhitelistBot(Client):
             Gets Called by the on_message Event Handler, if the channel is a Private Message.
         """
         author: User = message.author
-        message_content = (message.content.split(" ")[1:])
+        message_content = (message.content.split(" "))
 
         if len(message_content) < 2:
             await message.channel.send(self.usage_string)
             return
 
-        selectedGuild: Guild = 0
+        selectedGuild: Guild = None
 
         for guild in self.guilds:
             if guild.id == int(message_content[1]):
-                selectedGuild = guild.id
+                selectedGuild = guild
                 break
 
-        if selectedGuild == 0:
+        if selectedGuild is None:
             await message.channel.send(f"Error - Server not found! Make sure I am added to this Server.")
             return
 
         member: Member = selectedGuild.get_member(author.id)
 
-        if member == None or not member.guild_permissions.manage_guild():
+        if member == None or not member.guild_permissions.manage_guild:
             await message.channel.send(f"You need the 'Manage Server' permission on '{selectedGuild.name}' to manage the whitelist integration!")
             return
 
@@ -144,6 +146,7 @@ class WhitelistBot(Client):
                 await message.channel.send(
                     f"Whitelist Listener on '{guild.name}' has been successfully enabled!")
 
+            dataInterface.save_guild(selectedGuild.id)
             print(
                 f"'{author.name}' set up WhitelistBot for '{guild.name}' listening on RCON Server '{message_content[2]}'")
             return
