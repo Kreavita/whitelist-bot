@@ -46,7 +46,7 @@ class GuildEntry:
         if ingame_name is None:
             self.players[str(user_id)] = None
         else:
-            self.players[str(user_id)] = ingame_name.lower()
+            self.players[str(user_id)] = ingame_name
 
     def to_JSON(self) -> str:
         """Returns a JSON Representation of this GuildEntry
