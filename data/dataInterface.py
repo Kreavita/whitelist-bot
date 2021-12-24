@@ -1,7 +1,7 @@
 import os
 from data.GuildEntry import GuildEntry, GuildEntry_from_JSON
 
-guilds: dict[str, GuildEntry] = {}
+guilds: dict[int, GuildEntry] = {}
 
 
 def load_guilds() -> None:
@@ -31,7 +31,7 @@ def save_all() -> None:
         save_guild(guild_id)
 
 
-def save_guild(guild_id: str) -> bool:
+def save_guild(guild_id: int) -> bool:
     """Saves the player database of a guild to the disk. Returns `True` if it was successful, or else `False`
     """
 
@@ -45,9 +45,31 @@ def save_guild(guild_id: str) -> bool:
 
     with open(os.path.join(os.path.dirname(__file__), f"guilds\{guild_id}.json"), "w") as file:
         file.write(guilds.get(guild_id).to_JSON())
+    return True
 
 
-def guild_by_id(guild_id: str) -> GuildEntry:
+def delete_guild(guild_id: int) -> bool:
+    """Deletes the player database of a guild from the disk. Returns `True` if it was successful, or else `False`
+    """
+
+    global guilds
+
+    if guild_id == None:
+        return False
+
+    if guilds.get(guild_id) == None:
+        return False
+
+    if os.path.exists(os.path.join(os.path.dirname(
+            __file__), f"guilds\{guild_id}.json")):
+        os.remove(os.path.join(os.path.dirname(
+            __file__), f"guilds\{guild_id}.json"))
+        return True
+
+    return False
+
+
+def guild_by_id(guild_id: int) -> GuildEntry:
     """Returns the GuildEntry for a given `guild_id`. \
         Creates a new GuildEntry if the `guild_id` is not in the Guilds dict. \
         Returns None if `guild_id` is None
@@ -64,15 +86,14 @@ def guild_by_id(guild_id: str) -> GuildEntry:
     if guilds.get(guild_id) == None:
         # returns a new GuildEntry if the guild_id has none yet
         guilds[guild_id] = GuildEntry(guild_id, "")
-        return guilds[guild_id]
 
     return guilds.get(guild_id)
 
 
-def set_guild(guild_id: str, guild: GuildEntry) -> bool:
-    """Returns the GuildEntry for a given `guild_id`. \
+def set_guild(guild_id: int, guild: GuildEntry) -> bool:
+    """Sets the GuildEntry for a given `guild_id`. \
         Creates a new GuildEntry if the `guild_id` is not in the Guilds dict. \
-        Returns None if `guild_id` is None
+        Returns False if `guild_id` is None or `guild_id` is already set.
 
         Arguments:
             - `guild_id` ID of the requested Guild
@@ -82,7 +103,7 @@ def set_guild(guild_id: str, guild: GuildEntry) -> bool:
     global guilds
 
     if guild_id == None:
-        return None
+        return False
 
     if guilds.get(guild_id) != None:
         # return false, because this guild already has a configuration entry

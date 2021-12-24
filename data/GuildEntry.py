@@ -1,5 +1,6 @@
 import json
 from dataclasses import dataclass, field, asdict
+from typing import Union
 
 
 @dataclass
@@ -12,25 +13,39 @@ class GuildEntry:
         - `rcon_port` RCON port of the guilds minecraft server
         - `players` Player dict {user_id : ingame_name}
     """
-    guild_id: str
+    guild_id: int
     rcon_address: str
-    rcon_port: int = 25575
-    players: dict[str, str] = field(default_factory=dict)
+    rcon_port: int
+    rcon_password: str
+    players: dict[int, str] = field(default_factory=dict)
 
-    def __init__(self, guild_id: str, rcon_address: str, rcon_port: int = 25575, players: dict[str, str] = {}):
+    def __init__(self, guild_id: int, rcon_address: str, rcon_port: int, rcon_password: str, players: dict[str, str] = {}):
         self.guild_id = guild_id
         self.rcon_address = rcon_address
         self.rcon_port = rcon_port
+        self.rcon_password = rcon_password
         self.players = players
 
-    def get_username_by_id(self, user_id: str) -> str:
+    def player_by_id(self, user_id: int) -> Union[str, None]:
+        """ Get the minecraft username associated with the Discord ID `user_id` and return it, or return `None`
+        """
         return self.players.get(user_id)
 
-    def set_player(self, user_id: str, ingame_name: str) -> None:
-        self.players[user_id] = ingame_name
+    def id_by_player(self, player_name: str) -> Union[int, None]:
+        """ Get the Discord ID associated with a minecraft username `player_name` and return it, or return `None`
+        """
+        for id, key in self.players:
+            if key == player_name.lower():
+                return id
+        return None
+
+    def set_player(self, user_id: int, ingame_name: str) -> None:
+        """Sets the username of a players
+        """
+        self.players[user_id] = ingame_name.lower()
 
     def to_JSON(self) -> str:
-        """Returns a JSON Representation of this dataclass
+        """Returns a JSON Representation of this GuildEntry
         """
         return json.dumps(asdict(self), indent=2)
 
