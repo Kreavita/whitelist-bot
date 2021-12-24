@@ -72,8 +72,8 @@ class WhitelistBot(Client):
 
     usage_string: str = 'Sorry, the command you entered was not correct.\n' +\
         'Bot Usage: \n' + \
-        '`/ enable < Server-ID > <RCON-Host: Port > <RCON-password >` to enable the bot for your server or update the config\n' + \
-        '`/ disable < Server-ID >` to remove the server from the whitelist. This will keep your whitelist, but delete the configuration on our servers.'
+        '`/enable <Server-ID> <RCON-Host:Port> <RCON-password>` to enable the bot for your server or update the config\n' + \
+        '`/disable <Server-ID>` to remove the server from the whitelist. This will keep your whitelist, but delete the configuration on our servers.'
 
     async def private_message(self, message: Message):
         """ Handles Private Discord Messages.
