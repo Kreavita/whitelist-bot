@@ -1,7 +1,9 @@
 import os
+from typing import Dict
+
 from data.GuildEntry import GuildEntry, GuildEntry_from_JSON
 
-guilds: dict[int, GuildEntry] = {}
+guilds: Dict[int, GuildEntry] = {}
 
 
 def load_guilds() -> None:
@@ -43,7 +45,7 @@ def save_guild(guild_id: int) -> bool:
     if guilds.get(guild_id) == None:
         return False
 
-    with open(os.path.join(os.path.dirname(__file__), f"guilds\{guild_id}.json"), "w") as file:
+    with open(os.path.join(os.path.dirname(__file__), "guilds", f"{guild_id}.json"), "w") as file:
         file.write(guilds.get(guild_id).to_JSON())
     return True
 

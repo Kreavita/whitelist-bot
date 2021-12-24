@@ -2,8 +2,6 @@ import enum
 import os
 from subprocess import STDOUT, check_output, CalledProcessError
 
-from discord.guild import Guild
-
 import config
 from data import dataInterface
 from data.GuildEntry import GuildEntry
@@ -11,7 +9,7 @@ from data.GuildEntry import GuildEntry
 
 def run_rcon_command(command: str, guild: GuildEntry) -> bool:
     """Connect to a Minecraft RCON server and execute a minecraft command using mrcon in the console: \n
-        `mrcon -H rcon_address -P rcon_port -p rcon_password "command"`
+        `mcrcon -H rcon_address -P rcon_port -p rcon_password "command"`
 
     Attributes:
       - `command` A valid minecraft server command
@@ -22,11 +20,10 @@ def run_rcon_command(command: str, guild: GuildEntry) -> bool:
 
     try:
         print(check_output([os.path.join(
-            config.RCON_PATH, "mrcon"),
+            config.RCON_PATH, "mcrcon"),
             "-H", guild.rcon_address,
-            "-P", guild.rcon_port,
-            "-p", guild.rcon_password,
-            f'"{command}"'],
+            "-P", str(guild.rcon_port),
+            "-p", guild.rcon_password, command],
             stderr=STDOUT))
         return True
 
@@ -36,7 +33,7 @@ def run_rcon_command(command: str, guild: GuildEntry) -> bool:
         return False
 
     except TypeError as e:
-        print(f"ERROR: mrcon path is invalid!")
+        print(f"ERROR: bad arguments!")
         return False
 
 

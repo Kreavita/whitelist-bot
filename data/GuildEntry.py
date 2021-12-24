@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass, field, asdict
-from typing import Union
+from typing import Union, Dict
 
 
 @dataclass
@@ -18,9 +18,9 @@ class GuildEntry:
     rcon_address: str
     rcon_port: int
     rcon_password: str
-    players: dict[str, str] = field(default_factory=dict)
+    players: Dict[str, str] = field(default_factory=dict)
 
-    def __init__(self, guild_id: int, rcon_address: str, rcon_port: int, rcon_password: str, players: dict[str, str] = {}):
+    def __init__(self, guild_id: int, rcon_address: str, rcon_port: int, rcon_password: str, players: Dict[str, str] = {}):
         self.guild_id = guild_id
         self.rcon_address = rcon_address
         self.rcon_port = rcon_port

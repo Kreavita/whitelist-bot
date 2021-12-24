@@ -68,7 +68,7 @@ class WhitelistBot(Client):
         await message.channel.send(f'{author.mention} Your minecraft account `{params[0]}` has been added to the Whitelist!')
         dataInterface.save_guild(author.guild.id)
         print(
-            f"'{author.name}' whitelisted his name '{params[0]}' on '{guild.name}'")
+            f"'{author.name}' whitelisted his name '{params[0]}' on '{author.guild.name}'")
 
     usage_string: str = 'Sorry, the command you entered was not correct.\n' +\
         'Bot Usage: \n' + \
