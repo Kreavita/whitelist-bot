@@ -49,15 +49,22 @@ class WhitelistBot(Client):
             return
 
         if guild.players.get(author.id) != None:
-            await message.channel.send(f'{author.mention} You have updated your whitelisted account \
-                    from `{guild.players.get(author.id)}` \
-                    to `{params[0]}`!')
-            whitelist(Command.REMOVE, author.guild.id, author.id)
-        else:
-            await message.channel.send(f'{author.mention} Your Minecraft-Account `{params[0]}` has been whitelisted!')
+            if not whitelist(Command.REMOVE, author.guild.id, author.id):
+                await message.channel.send(f'{author.mention} An internal error occured while trying\
+                     to whitelist your username, maybe a faulty RCON configuration?')
+                return
+
+            await message.channel.send(f'{author.mention} Your old minecraft account, `\
+                    {guild.players.get(author.id)}`, is no longer whitelisted!')
 
         guild.set_player(author.id, params[0])
-        whitelist(Command.ADD, author.guild.id, author.id)
+
+        if not whitelist(Command.ADD, author.guild.id, author.id):
+            await message.channel.send(f'{author.mention} An internal error occured while trying\
+                    to whitelist your username, maybe a faulty RCON configuration?')
+            return
+
+        await message.channel.send(f'{author.mention} Your minecraft account `{params[0]}` has been added to the Whitelist!')
         print(
             f"'{author.name}' whitelisted his name '{params[0]}' on '{guild.name}'")
 
