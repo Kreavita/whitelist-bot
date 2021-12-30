@@ -43,7 +43,7 @@ class WhitelistBot(Client):
             await message.channel.send(f'{author.mention} WhitelistBot has not been configured on this server. If you think this is an error, contact this servers admins.')
             return
 
-        if guild.player_by_id(author.id).lower() == params[0].lower():
+        if guild.player_by_id(author.id) != None and guild.player_by_id(author.id).lower() == params[0].lower():
             await message.channel.send(f'{author.mention} You are already whitelisted, Nothing changed!')
             return
 

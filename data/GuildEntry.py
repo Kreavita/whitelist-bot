@@ -36,7 +36,7 @@ class GuildEntry:
         """ Get the Discord ID associated with a minecraft username `player_name` and return it, or return `None`
         """
         for user_id in self.players.keys():
-            if self.players[user_id] == player_name.lower():
+            if self.players[user_id].lower() == player_name.lower():
                 return int(user_id)
         return None
 
